@@ -2,6 +2,8 @@ import { usePlayerStore } from '../../store/playerStore';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { ProgressBar } from './ProgressBar';
 import { VolumeControl } from './VolumeControl';
+import { SeekButtons } from './SeekButtons';
+import { SpeedControl } from './SpeedControl';
 import './PlayerToolbar.css';
 
 export function PlayerToolbar() {
@@ -36,6 +38,7 @@ export function PlayerToolbar() {
         </div>
 
         <div className="player-toolbar__center">
+          <SeekButtons />
           <button
             className="skeuo-btn skeuo-btn-round"
             onClick={stop}
@@ -65,6 +68,7 @@ export function PlayerToolbar() {
         </div>
 
         <div className="player-toolbar__right">
+          <SpeedControl />
           <VolumeControl />
         </div>
       </div>

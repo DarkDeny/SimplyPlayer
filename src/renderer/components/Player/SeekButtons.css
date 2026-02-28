@@ -1,0 +1,23 @@
+.seek-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.seek-buttons__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.seek-buttons__btn {
+  padding: 4px 6px;
+  font-size: 10px;
+  gap: 2px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.seek-buttons__btn svg {
+  flex-shrink: 0;
+}

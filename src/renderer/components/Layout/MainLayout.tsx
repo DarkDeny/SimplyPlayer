@@ -1,11 +1,14 @@
 import { usePlayerStore } from '../../store/playerStore';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useChapters } from '../../hooks/useChapters';
 import { PlayerToolbar } from '../Player/PlayerToolbar';
+import { ChapterList } from '../Audiobook/ChapterList';
 import './MainLayout.css';
 
 export function MainLayout() {
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const { openFileDialog } = useAudioPlayer();
+  const { hasChapters } = useChapters();
 
   return (
     <div className="main-layout">
@@ -48,6 +51,11 @@ export function MainLayout() {
             </div>
           )}
         </div>
+        {hasChapters && (
+          <div className="main-layout__sidebar">
+            <ChapterList />
+          </div>
+        )}
       </div>
       <PlayerToolbar />
     </div>
