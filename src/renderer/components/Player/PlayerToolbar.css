@@ -1,0 +1,75 @@
+.player-toolbar {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  padding: 0;
+}
+
+.player-toolbar__controls {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px 12px;
+  gap: 16px;
+}
+
+.player-toolbar__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-toolbar__track-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.player-toolbar__cover {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.player-toolbar__text {
+  min-width: 0;
+}
+
+.player-toolbar__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-toolbar__artist {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-toolbar__center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-toolbar__center button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.player-toolbar__right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}

@@ -1,0 +1,25 @@
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.volume-control__icon {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.volume-control__icon:hover {
+  color: var(--text-primary);
+}
+
+.volume-control__slider {
+  width: 100px;
+}
