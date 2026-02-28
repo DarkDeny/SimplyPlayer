@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AudioMetadata, Chapter, Bookmark } from '../../shared/types';
+import type { AudioMetadata, Bookmark } from '../../shared/types';
 
 interface PlayerState {
   // Current track
@@ -11,8 +11,7 @@ interface PlayerState {
   volume: number;
   playbackRate: number;
 
-  // Chapters (for M4B)
-  chapters: Chapter[];
+  // Chapters (for M4B) — derived from currentTrack.chapters
   currentChapterIndex: number;
 
   // Bookmarks
@@ -33,7 +32,6 @@ interface PlayerState {
   setDuration: (duration: number) => void;
   setVolume: (volume: number) => void;
   setPlaybackRate: (rate: number) => void;
-  setChapters: (chapters: Chapter[]) => void;
   setCurrentChapterIndex: (index: number) => void;
   setBookmarks: (bookmarks: Bookmark[]) => void;
   addBookmark: (bookmark: Bookmark) => void;
@@ -45,19 +43,18 @@ interface PlayerState {
 }
 
 const initialState = {
-  currentTrack: null,
-  audioUrl: null,
+  currentTrack: null as AudioMetadata | null,
+  audioUrl: null as string | null,
   isPlaying: false,
   currentTime: 0,
   duration: 0,
   volume: 0.8,
   playbackRate: 1,
-  chapters: [],
   currentChapterIndex: -1,
-  bookmarks: [],
-  sleepTimerEnd: null,
+  bookmarks: [] as Bookmark[],
+  sleepTimerEnd: null as number | null,
   sleepTimerMode: 'off' as const,
-  playlist: [],
+  playlist: [] as AudioMetadata[],
   currentIndex: -1,
 };
 
@@ -65,13 +62,18 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   ...initialState,
 
   setCurrentTrack: (track, audioUrl) =>
-    set({ currentTrack: track, audioUrl, chapters: track.chapters, currentTime: 0, duration: track.duration }),
+    set({
+      currentTrack: track,
+      audioUrl,
+      currentTime: 0,
+      duration: track.duration,
+      currentChapterIndex: -1,
+    }),
   setIsPlaying: (playing) => set({ isPlaying: playing }),
   setCurrentTime: (time) => set({ currentTime: time }),
   setDuration: (duration) => set({ duration }),
   setVolume: (volume) => set({ volume }),
   setPlaybackRate: (rate) => set({ playbackRate: rate }),
-  setChapters: (chapters) => set({ chapters }),
   setCurrentChapterIndex: (index) => set({ currentChapterIndex: index }),
   setBookmarks: (bookmarks) => set({ bookmarks }),
   addBookmark: (bookmark) =>

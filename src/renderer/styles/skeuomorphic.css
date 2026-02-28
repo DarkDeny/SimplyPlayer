@@ -60,9 +60,8 @@
   transform: translateY(1px);
 }
 
-/* Круглая кнопка (play/pause и т.д.) */
+/* Круглая кнопка — использовать вместе с .skeuo-btn: class="skeuo-btn skeuo-btn-round" */
 .skeuo-btn-round {
-  composes: skeuo-btn;
   border-radius: 50%;
   width: 48px;
   height: 48px;

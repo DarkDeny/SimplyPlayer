@@ -5,8 +5,9 @@ import { VolumeControl } from './VolumeControl';
 import './PlayerToolbar.css';
 
 export function PlayerToolbar() {
-  const { togglePlay, stop, openFileDialog, isPlaying } = useAudioPlayer();
-  const { currentTrack, currentTime, duration } = usePlayerStore();
+  const { togglePlay, stop, openFileDialog } = useAudioPlayer();
+  const currentTrack = usePlayerStore((s) => s.currentTrack);
+  const isPlaying = usePlayerStore((s) => s.isPlaying);
 
   return (
     <div className="player-toolbar skeuo-panel">
@@ -36,9 +37,10 @@ export function PlayerToolbar() {
 
         <div className="player-toolbar__center">
           <button
-            className="skeuo-btn-round"
+            className="skeuo-btn skeuo-btn-round"
             onClick={stop}
             title="Stop"
+            aria-label="Stop"
             disabled={!currentTrack}
           >
             <StopIcon />
@@ -47,6 +49,7 @@ export function PlayerToolbar() {
             className="skeuo-btn-play"
             onClick={togglePlay}
             title={isPlaying ? 'Pause' : 'Play'}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
             disabled={!currentTrack}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -55,6 +58,7 @@ export function PlayerToolbar() {
             className="skeuo-btn"
             onClick={openFileDialog}
             title="Open File"
+            aria-label="Open File"
           >
             <FolderIcon />
           </button>
@@ -70,7 +74,7 @@ export function PlayerToolbar() {
 
 function PlayIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M8 5v14l11-7z" />
     </svg>
   );
@@ -78,7 +82,7 @@ function PlayIcon() {
 
 function PauseIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
     </svg>
   );
@@ -86,7 +90,7 @@ function PauseIcon() {
 
 function StopIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M6 6h12v12H6z" />
     </svg>
   );
@@ -94,7 +98,7 @@ function StopIcon() {
 
 function FolderIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
     </svg>
   );

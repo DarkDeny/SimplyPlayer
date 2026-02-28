@@ -12,48 +12,53 @@ import {
 } from './services/store-service';
 import type { PlaybackPosition, Bookmark, Playlist } from '../shared/types';
 
+function wrapHandler<T>(handler: (...args: unknown[]) => T | Promise<T>) {
+  return async (_event: Electron.IpcMainInvokeEvent, ...args: unknown[]) => {
+    try {
+      return await handler(...args);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`IPC handler error: ${message}`);
+      throw new Error(message);
+    }
+  };
+}
+
 export function registerIpcHandlers(): void {
-  ipcMain.handle('dialog:openFiles', async () => {
-    return openFileDialog();
-  });
+  ipcMain.handle('dialog:openFiles', wrapHandler(() => openFileDialog()));
+  ipcMain.handle('dialog:openFolder', wrapHandler(() => openFolderDialog()));
 
-  ipcMain.handle('dialog:openFolder', async () => {
-    return openFolderDialog();
-  });
+  ipcMain.handle('audio:getMetadata', wrapHandler(
+    (filePath: unknown) => extractMetadata(filePath as string),
+  ));
 
-  ipcMain.handle('audio:getMetadata', async (_event, filePath: string) => {
-    return extractMetadata(filePath);
-  });
+  ipcMain.handle('audio:getFileUrl', wrapHandler(
+    (filePath: unknown) => getFileUrl(filePath as string),
+  ));
 
-  ipcMain.handle('audio:getFileUrl', async (_event, filePath: string) => {
-    return getFileUrl(filePath);
-  });
+  ipcMain.handle('store:savePlaybackPosition', wrapHandler(
+    (position: unknown) => savePlaybackPosition(position as PlaybackPosition),
+  ));
 
-  ipcMain.handle('store:savePlaybackPosition', async (_event, position: PlaybackPosition) => {
-    savePlaybackPosition(position);
-  });
+  ipcMain.handle('store:getPlaybackPosition', wrapHandler(
+    (filePath: unknown) => getPlaybackPosition(filePath as string),
+  ));
 
-  ipcMain.handle('store:getPlaybackPosition', async (_event, filePath: string) => {
-    return getPlaybackPosition(filePath);
-  });
+  ipcMain.handle('store:saveBookmark', wrapHandler(
+    (bookmark: unknown) => saveBookmark(bookmark as Bookmark),
+  ));
 
-  ipcMain.handle('store:saveBookmark', async (_event, bookmark: Bookmark) => {
-    saveBookmark(bookmark);
-  });
+  ipcMain.handle('store:deleteBookmark', wrapHandler(
+    (id: unknown) => deleteBookmark(id as string),
+  ));
 
-  ipcMain.handle('store:deleteBookmark', async (_event, id: string) => {
-    deleteBookmark(id);
-  });
+  ipcMain.handle('store:getBookmarks', wrapHandler(
+    (filePath: unknown) => getBookmarks(filePath as string),
+  ));
 
-  ipcMain.handle('store:getBookmarks', async (_event, filePath: string) => {
-    return getBookmarks(filePath);
-  });
+  ipcMain.handle('store:savePlaylists', wrapHandler(
+    (playlists: unknown) => savePlaylists(playlists as Playlist[]),
+  ));
 
-  ipcMain.handle('store:savePlaylists', async (_event, playlists: Playlist[]) => {
-    savePlaylists(playlists);
-  });
-
-  ipcMain.handle('store:getPlaylists', async () => {
-    return getPlaylists();
-  });
+  ipcMain.handle('store:getPlaylists', wrapHandler(() => getPlaylists()));
 }

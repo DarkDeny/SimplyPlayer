@@ -4,7 +4,7 @@ import { PlayerToolbar } from '../Player/PlayerToolbar';
 import './MainLayout.css';
 
 export function MainLayout() {
-  const { currentTrack } = usePlayerStore();
+  const currentTrack = usePlayerStore((s) => s.currentTrack);
   const { openFileDialog } = useAudioPlayer();
 
   return (
@@ -33,7 +33,13 @@ export function MainLayout() {
               </div>
             </div>
           ) : (
-            <div className="main-layout__welcome" onClick={openFileDialog}>
+            <div
+              className="main-layout__welcome"
+              onClick={openFileDialog}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && openFileDialog()}
+            >
               <div className="main-layout__welcome-icon skeuo-panel">
                 <MusicNoteIcon />
               </div>
@@ -50,7 +56,7 @@ export function MainLayout() {
 
 function MusicNoteIcon() {
   return (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" opacity="0.4">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" opacity="0.4" aria-hidden="true">
       <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
     </svg>
   );

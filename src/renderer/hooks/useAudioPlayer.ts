@@ -1,33 +1,18 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
+import { useAudioRef } from '../context/AudioContext';
 import { usePlayerStore } from '../store/playerStore';
 
 export function useAudioPlayer() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const {
-    audioUrl,
-    isPlaying,
-    volume,
-    playbackRate,
-    currentTrack,
-    setIsPlaying,
-    setCurrentTime,
-    setDuration,
-    setCurrentTrack,
-  } = usePlayerStore();
+  const audioRef = useAudioRef();
 
-  // Initialize audio element
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.preservesPitch = true;
-    }
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-      }
-    };
-  }, []);
+  const audioUrl = usePlayerStore((s) => s.audioUrl);
+  const isPlaying = usePlayerStore((s) => s.isPlaying);
+  const volume = usePlayerStore((s) => s.volume);
+  const playbackRate = usePlayerStore((s) => s.playbackRate);
+  const setIsPlaying = usePlayerStore((s) => s.setIsPlaying);
+  const setCurrentTime = usePlayerStore((s) => s.setCurrentTime);
+  const setDuration = usePlayerStore((s) => s.setDuration);
+  const setCurrentTrack = usePlayerStore((s) => s.setCurrentTrack);
 
   // Update source
   useEffect(() => {
@@ -35,7 +20,7 @@ export function useAudioPlayer() {
     if (!audio || !audioUrl) return;
     audio.src = audioUrl;
     audio.load();
-  }, [audioUrl]);
+  }, [audioRef, audioUrl]);
 
   // Play/pause sync
   useEffect(() => {
@@ -47,21 +32,21 @@ export function useAudioPlayer() {
     } else {
       audio.pause();
     }
-  }, [isPlaying, audioUrl, setIsPlaying]);
+  }, [audioRef, isPlaying, audioUrl, setIsPlaying]);
 
   // Volume sync
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
-  }, [volume]);
+  }, [audioRef, volume]);
 
   // Playback rate sync
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.playbackRate = playbackRate;
     }
-  }, [playbackRate]);
+  }, [audioRef, playbackRate]);
 
   // Time update events
   useEffect(() => {
@@ -88,11 +73,17 @@ export function useAudioPlayer() {
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
-  }, [setCurrentTime, setDuration, setIsPlaying]);
+  }, [audioRef, setCurrentTime, setDuration, setIsPlaying]);
 
   const play = useCallback(() => setIsPlaying(true), [setIsPlaying]);
   const pause = useCallback(() => setIsPlaying(false), [setIsPlaying]);
-  const togglePlay = useCallback(() => setIsPlaying(!isPlaying), [isPlaying, setIsPlaying]);
+  const togglePlay = useCallback(
+    () => {
+      const playing = usePlayerStore.getState().isPlaying;
+      setIsPlaying(!playing);
+    },
+    [setIsPlaying],
+  );
 
   const stop = useCallback(() => {
     setIsPlaying(false);
@@ -100,17 +91,18 @@ export function useAudioPlayer() {
       audioRef.current.currentTime = 0;
     }
     setCurrentTime(0);
-  }, [setIsPlaying, setCurrentTime]);
+  }, [audioRef, setIsPlaying, setCurrentTime]);
 
   const seek = useCallback(
     (time: number) => {
-      if (audioRef.current && isFinite(time)) {
-        const clamped = Math.max(0, Math.min(time, audioRef.current.duration || 0));
-        audioRef.current.currentTime = clamped;
+      const audio = audioRef.current;
+      if (audio && isFinite(time)) {
+        const clamped = Math.max(0, Math.min(time, audio.duration || 0));
+        audio.currentTime = clamped;
         setCurrentTime(clamped);
       }
     },
-    [setCurrentTime],
+    [audioRef, setCurrentTime],
   );
 
   const seekRelative = useCallback(
@@ -119,28 +111,36 @@ export function useAudioPlayer() {
         seek(audioRef.current.currentTime + delta);
       }
     },
-    [seek],
+    [audioRef, seek],
   );
 
   const loadFile = useCallback(
     async (filePath: string) => {
-      const metadata = await window.electronAPI.getMetadata(filePath);
-      const url = await window.electronAPI.getFileUrl(filePath);
-      setCurrentTrack(metadata, url);
-      setIsPlaying(true);
+      try {
+        const metadata = await window.electronAPI.getMetadata(filePath);
+        const url = await window.electronAPI.getFileUrl(filePath);
+        setCurrentTrack(metadata, url);
+        setIsPlaying(true);
+      } catch (err) {
+        console.error('Failed to load file:', filePath, err);
+      }
     },
     [setCurrentTrack, setIsPlaying],
   );
 
   const openFileDialog = useCallback(async () => {
-    const files = await window.electronAPI.openFiles();
-    if (files.length > 0) {
-      await loadFile(files[0]);
+    try {
+      const files = await window.electronAPI.openFiles();
+      if (files.length > 0) {
+        // TODO: Phase 5 — add remaining files to playlist
+        await loadFile(files[0]);
+      }
+    } catch (err) {
+      console.error('Failed to open file dialog:', err);
     }
   }, [loadFile]);
 
   return {
-    audioRef,
     play,
     pause,
     togglePlay,
@@ -149,7 +149,5 @@ export function useAudioPlayer() {
     seekRelative,
     loadFile,
     openFileDialog,
-    currentTrack,
-    isPlaying,
   };
 }

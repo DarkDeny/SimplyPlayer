@@ -1,4 +1,5 @@
 import { parseFile } from 'music-metadata';
+import path from 'node:path';
 import type { AudioMetadata, Chapter } from '../../shared/types';
 
 export async function extractMetadata(filePath: string): Promise<AudioMetadata> {
@@ -14,18 +15,21 @@ export async function extractMetadata(filePath: string): Promise<AudioMetadata> 
   const chapters: Chapter[] = [];
   if (metadata.common.chapters) {
     for (const ch of metadata.common.chapters) {
+      // music-metadata returns startTime and duration in seconds
+      const startTime = ch.startTime ?? 0;
+      const duration = ch.duration ?? 0;
       chapters.push({
         title: ch.title || `Chapter ${chapters.length + 1}`,
-        startTime: (ch.startTime ?? 0) / 1000,
-        endTime: ((ch.startTime ?? 0) + (ch.duration ?? 0)) / 1000,
+        startTime,
+        endTime: startTime + duration,
       });
     }
   }
 
-  const ext = filePath.split('.').pop()?.toLowerCase() || '';
+  const ext = path.extname(filePath).slice(1).toLowerCase();
 
   return {
-    title: metadata.common.title || filePath.split(/[/\\]/).pop() || 'Unknown',
+    title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
     artist: metadata.common.artist || 'Unknown Artist',
     album: metadata.common.album || '',
     duration: metadata.format.duration || 0,

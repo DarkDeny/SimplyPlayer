@@ -1,9 +1,9 @@
 import { dialog } from 'electron';
 import { pathToFileURL } from 'node:url';
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const AUDIO_EXTENSIONS = ['.mp3', '.m4b', '.m4a', '.aac', '.ogg', '.flac', '.wav'];
+const AUDIO_EXTENSIONS = new Set(['.mp3', '.m4b', '.m4a', '.aac', '.ogg', '.flac', '.wav']);
 
 export async function openFileDialog(): Promise<string[]> {
   const result = await dialog.showOpenDialog({
@@ -29,16 +29,15 @@ export async function openFolderDialog(): Promise<string[]> {
   return scanFolder(folderPath);
 }
 
-function scanFolder(folderPath: string): string[] {
+async function scanFolder(folderPath: string): Promise<string[]> {
   const files: string[] = [];
 
-  const entries = fs.readdirSync(folderPath, { withFileTypes: true });
+  const entries = await fs.readdir(folderPath, { withFileTypes: true });
   for (const entry of entries) {
-    const fullPath = path.join(folderPath, entry.name);
     if (entry.isFile()) {
       const ext = path.extname(entry.name).toLowerCase();
-      if (AUDIO_EXTENSIONS.includes(ext)) {
-        files.push(fullPath);
+      if (AUDIO_EXTENSIONS.has(ext)) {
+        files.push(path.join(folderPath, entry.name));
       }
     }
   }
