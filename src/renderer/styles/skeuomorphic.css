@@ -1,0 +1,171 @@
+/* === Skeuomorphic / 3D Volumetric Styles === */
+
+/* Raised panel — основная поверхность */
+.skeuo-panel {
+  background: linear-gradient(180deg, #3a3a3a 0%, #2e2e2e 100%);
+  border: 1px solid #4a4a4a;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Inset panel — утопленная поверхность */
+.skeuo-inset {
+  background: linear-gradient(180deg, #1a1a1a 0%, #222222 100%);
+  border: 1px solid #111111;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Кнопка — объёмная, с металлическим градиентом */
+.skeuo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: linear-gradient(180deg, #4a4a4a 0%, #383838 50%, #303030 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.skeuo-btn:hover {
+  background: linear-gradient(180deg, #555555 0%, #444444 50%, #383838 100%);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.skeuo-btn:active {
+  background: linear-gradient(180deg, #2a2a2a 0%, #333333 50%, #383838 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  transform: translateY(1px);
+}
+
+/* Круглая кнопка (play/pause и т.д.) */
+.skeuo-btn-round {
+  composes: skeuo-btn;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: radial-gradient(circle at 35% 35%, #555555, #3a3a3a 60%, #2a2a2a);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.skeuo-btn-round:hover {
+  background: radial-gradient(circle at 35% 35%, #666666, #454545 60%, #353535);
+}
+
+.skeuo-btn-round:active {
+  background: radial-gradient(circle at 50% 50%, #333333, #2a2a2a 60%, #222222);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    inset 0 2px 6px rgba(0, 0, 0, 0.4);
+  transform: scale(0.97);
+}
+
+/* Большая кнопка play */
+.skeuo-btn-play {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  background: radial-gradient(circle at 35% 35%, #5a5a5a, #404040 55%, #2a2a2a);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.skeuo-btn-play:hover {
+  background: radial-gradient(circle at 35% 35%, #6a6a6a, #505050 55%, #3a3a3a);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.55),
+    0 4px 8px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.18),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.skeuo-btn-play:active {
+  background: radial-gradient(circle at 50% 50%, #353535, #2a2a2a 55%, #1e1e1e);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 3px 8px rgba(0, 0, 0, 0.4);
+  transform: scale(0.96);
+}
+
+/* Слайдер — объёмная дорожка */
+.skeuo-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #252525 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  outline: none;
+  cursor: pointer;
+}
+
+.skeuo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #888888, #555555 60%, #404040);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.skeuo-slider::-webkit-slider-thumb:hover {
+  background: radial-gradient(circle at 35% 35%, #999999, #666666 60%, #505050);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+.skeuo-slider::-webkit-slider-thumb:active {
+  background: radial-gradient(circle at 50% 50%, #666666, #444444 60%, #333333);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
