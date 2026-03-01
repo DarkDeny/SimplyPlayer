@@ -1,13 +1,14 @@
 import { usePlayerStore } from '../../store/playerStore';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { ProgressBar } from './ProgressBar';
 import { VolumeControl } from './VolumeControl';
 import { SeekButtons } from './SeekButtons';
 import { SpeedControl } from './SpeedControl';
+import { SleepTimer } from '../Audiobook/SleepTimer';
 import './PlayerToolbar.css';
 
 export function PlayerToolbar() {
-  const { togglePlay, stop, openFileDialog } = useAudioPlayer();
+  const { togglePlay, stop, openFileDialog } = useAudioActions();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
 
@@ -68,6 +69,7 @@ export function PlayerToolbar() {
         </div>
 
         <div className="player-toolbar__right">
+          <SleepTimer />
           <SpeedControl />
           <VolumeControl />
         </div>

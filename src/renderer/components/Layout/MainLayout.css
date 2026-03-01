@@ -107,9 +107,13 @@
   margin-top: 2px;
 }
 
-/* Sidebar (chapters) */
+/* Sidebar (chapters + bookmarks) */
 .main-layout__sidebar {
   width: 280px;
   flex-shrink: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
 }

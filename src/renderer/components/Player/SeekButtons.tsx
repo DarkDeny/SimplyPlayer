@@ -1,4 +1,4 @@
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { usePlayerStore } from '../../store/playerStore';
 import './SeekButtons.css';
 
@@ -17,7 +17,7 @@ const SEEK_BACK: SeekStep[] = [
 const SEEK_FORWARD: SeekStep[] = [...SEEK_BACK].reverse();
 
 export function SeekButtons() {
-  const { seekRelative } = useAudioPlayer();
+  const { seekRelative } = useAudioActions();
   const currentTrack = usePlayerStore((s) => s.currentTrack);
 
   if (!currentTrack) return null;

@@ -1,0 +1,73 @@
+.sleep-timer {
+  position: relative;
+}
+
+.sleep-timer__toggle {
+  gap: 6px;
+}
+
+.skeuo-btn.sleep-timer__toggle--active {
+  color: var(--accent);
+}
+
+.sleep-timer__badge {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.sleep-timer__dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  padding: 8px;
+  z-index: 100;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sleep-timer__dropdown-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px 6px;
+}
+
+.sleep-timer__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.sleep-timer__option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sleep-timer__option--cancel {
+  color: var(--color-danger);
+}
+
+.sleep-timer__option--cancel:hover {
+  background: rgba(239, 83, 80, 0.1);
+}
+
+.sleep-timer__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}

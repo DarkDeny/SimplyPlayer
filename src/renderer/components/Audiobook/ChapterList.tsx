@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useChapters } from '../../hooks/useChapters';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { formatTime } from '../../utils/formatTime';
 import './ChapterList.css';
 
 export function ChapterList() {
   const { chapters, currentChapterIndex } = useChapters();
-  const { seek } = useAudioPlayer();
+  const { seek } = useAudioActions();
   const listRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
 
