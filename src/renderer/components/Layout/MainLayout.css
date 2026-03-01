@@ -106,3 +106,10 @@
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* Sidebar (chapters) */
+.main-layout__sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 0;
+}
