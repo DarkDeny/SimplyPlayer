@@ -60,6 +60,17 @@
   transform: translateY(1px);
 }
 
+/* Compact button variant for sidebars and toolbars */
+.skeuo-btn.skeuo-btn--small {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* Icon-only compact button */
+.skeuo-btn.skeuo-btn--icon {
+  padding: 4px;
+}
+
 /* Круглая кнопка — использовать вместе с .skeuo-btn: class="skeuo-btn skeuo-btn-round" */
 .skeuo-btn-round {
   border-radius: 50%;

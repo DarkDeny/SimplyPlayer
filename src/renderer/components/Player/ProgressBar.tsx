@@ -1,13 +1,13 @@
 import { useRef, useCallback, useState } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { formatTime } from '../../utils/formatTime';
 import './ProgressBar.css';
 
 export function ProgressBar() {
   const currentTime = usePlayerStore((s) => s.currentTime);
   const duration = usePlayerStore((s) => s.duration);
-  const { seek } = useAudioPlayer();
+  const { seek } = useAudioActions();
   const barRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragTime, setDragTime] = useState(0);
