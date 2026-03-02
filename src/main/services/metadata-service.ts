@@ -13,15 +13,15 @@ export async function extractMetadata(filePath: string): Promise<AudioMetadata> 
   }
 
   const chapters: Chapter[] = [];
-  if (metadata.common.chapters) {
-    for (const ch of metadata.common.chapters) {
-      // music-metadata returns startTime and duration in seconds
-      const startTime = ch.startTime ?? 0;
-      const duration = ch.duration ?? 0;
+  if (metadata.format.chapters) {
+    for (const ch of metadata.format.chapters) {
+      const timeScale = ch.timeScale || 1;
+      const startTime = ch.start / timeScale;
+      const endTime = ch.end != null ? ch.end / timeScale : startTime;
       chapters.push({
         title: ch.title || `Chapter ${chapters.length + 1}`,
         startTime,
-        endTime: startTime + duration,
+        endTime,
       });
     }
   }

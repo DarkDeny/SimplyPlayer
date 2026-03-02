@@ -67,6 +67,11 @@
   cursor: not-allowed;
 }
 
+.player-toolbar__open-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .player-toolbar__right {
   flex: 1;
   display: flex;
