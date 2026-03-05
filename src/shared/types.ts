@@ -43,6 +43,14 @@ export interface Playlist {
   createdAt: number;
 }
 
+/** Remembers what was playing when the app was last closed. */
+export interface LastSession {
+  filePaths: string[];
+  currentIndex: number;
+  position: number; // seconds
+  wasPlaying: boolean;
+}
+
 export interface ElectronAPI {
   openFiles: () => Promise<string[]>;
   openFolder: () => Promise<string[]>;
@@ -55,6 +63,8 @@ export interface ElectronAPI {
   getBookmarks: (filePath: string) => Promise<Bookmark[]>;
   savePlaylists: (playlists: Playlist[]) => Promise<void>;
   getPlaylists: () => Promise<Playlist[]>;
+  saveLastSession: (session: LastSession) => Promise<void>;
+  getLastSession: () => Promise<LastSession | null>;
 }
 
 declare global {

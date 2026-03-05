@@ -20,7 +20,50 @@ export function PlayerToolbar() {
   return (
     <div className="player-toolbar skeuo-panel">
       <ProgressBar />
-      <div className="player-toolbar__controls">
+
+      {/* Row 1: Transport — seek / prev / stop / play / next / seek */}
+      <div className="player-toolbar__transport">
+        <SeekButtons />
+        <button
+          className="skeuo-btn skeuo-btn-round"
+          onClick={playPrevious}
+          title="Previous track"
+          aria-label="Previous track"
+          disabled={!hasPrevious}
+        >
+          <PreviousIcon />
+        </button>
+        <button
+          className="skeuo-btn skeuo-btn-round"
+          onClick={stop}
+          title="Stop"
+          aria-label="Stop"
+          disabled={!currentTrack}
+        >
+          <StopIcon />
+        </button>
+        <button
+          className="skeuo-btn-play"
+          onClick={togglePlay}
+          title={isPlaying ? 'Pause' : 'Play'}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          disabled={!currentTrack}
+        >
+          {isPlaying ? <PauseIcon /> : <PlayIcon />}
+        </button>
+        <button
+          className="skeuo-btn skeuo-btn-round"
+          onClick={playNext}
+          title="Next track"
+          aria-label="Next track"
+          disabled={!hasNext}
+        >
+          <NextIcon />
+        </button>
+      </div>
+
+      {/* Row 2: Info (left) + Utilities (right) */}
+      <div className="player-toolbar__info-row">
         <div className="player-toolbar__left">
           {currentTrack ? (
             <div className="player-toolbar__track-info">
@@ -48,55 +91,15 @@ export function PlayerToolbar() {
           )}
         </div>
 
-        <div className="player-toolbar__center">
-          <SeekButtons />
+        <div className="player-toolbar__right">
           <button
-            className="skeuo-btn skeuo-btn-round"
-            onClick={playPrevious}
-            title="Previous track"
-            aria-label="Previous track"
-            disabled={!hasPrevious}
-          >
-            <PreviousIcon />
-          </button>
-          <button
-            className="skeuo-btn skeuo-btn-round"
-            onClick={stop}
-            title="Stop"
-            aria-label="Stop"
-            disabled={!currentTrack}
-          >
-            <StopIcon />
-          </button>
-          <button
-            className="skeuo-btn-play"
-            onClick={togglePlay}
-            title={isPlaying ? 'Pause' : 'Play'}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-            disabled={!currentTrack}
-          >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
-          </button>
-          <button
-            className="skeuo-btn skeuo-btn-round"
-            onClick={playNext}
-            title="Next track"
-            aria-label="Next track"
-            disabled={!hasNext}
-          >
-            <NextIcon />
-          </button>
-          <button
-            className="skeuo-btn"
+            className="skeuo-btn skeuo-btn--small"
             onClick={openFolderDialog}
             title="Open Folder"
             aria-label="Open Folder"
           >
             <FolderIcon />
           </button>
-        </div>
-
-        <div className="player-toolbar__right">
           <SleepTimer />
           <SpeedControl />
           <VolumeControl />
@@ -148,7 +151,7 @@ function NextIcon() {
 
 function FolderIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
     </svg>
   );

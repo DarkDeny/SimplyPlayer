@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { openFileDialog, openFolderDialog, getFileUrl } from './services/file-service';
-import { extractMetadata } from './services/metadata-service';
+import { extractMetadata, getCachedDuration } from './services/metadata-service';
 import {
   savePlaybackPosition,
   getPlaybackPosition,
@@ -9,8 +9,11 @@ import {
   getBookmarks,
   savePlaylists,
   getPlaylists,
+  saveLastSession,
+  getLastSession,
 } from './services/store-service';
-import type { PlaybackPosition, Bookmark, Playlist } from '../shared/types';
+import { startWarming, updatePosition } from './services/cache-service';
+import type { PlaybackPosition, Bookmark, Playlist, LastSession } from '../shared/types';
 
 function wrapHandler<T>(handler: (...args: unknown[]) => T | Promise<T>) {
   return async (_event: Electron.IpcMainInvokeEvent, ...args: unknown[]) => {
@@ -33,11 +36,29 @@ export function registerIpcHandlers(): void {
   ));
 
   ipcMain.handle('audio:getFileUrl', wrapHandler(
-    (filePath: unknown) => getFileUrl(filePath as string),
+    (filePath: unknown) => {
+      const fp = filePath as string;
+      const url = getFileUrl(fp);
+
+      // Kick off read-ahead cache warming in the background.
+      // getCachedDuration() returns 0 if getMetadata hasn't been called yet
+      // (shouldn't happen in normal flow), in which case startWarming is a no-op.
+      const duration = getCachedDuration(fp);
+      if (duration > 0) {
+        startWarming(fp, duration);
+      }
+
+      return url;
+    },
   ));
 
   ipcMain.handle('store:savePlaybackPosition', wrapHandler(
-    (position: unknown) => savePlaybackPosition(position as PlaybackPosition),
+    (position: unknown) => {
+      const pos = position as PlaybackPosition;
+      // Update cache warmer with the latest playback position
+      updatePosition(pos.position);
+      return savePlaybackPosition(pos);
+    },
   ));
 
   ipcMain.handle('store:getPlaybackPosition', wrapHandler(
@@ -61,4 +82,10 @@ export function registerIpcHandlers(): void {
   ));
 
   ipcMain.handle('store:getPlaylists', wrapHandler(() => getPlaylists()));
+
+  ipcMain.handle('store:saveLastSession', wrapHandler(
+    (session: unknown) => saveLastSession(session as LastSession),
+  ));
+
+  ipcMain.handle('store:getLastSession', wrapHandler(() => getLastSession()));
 }

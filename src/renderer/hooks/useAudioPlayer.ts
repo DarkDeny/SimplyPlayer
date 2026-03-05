@@ -29,6 +29,7 @@ async function loadFileInternal(
   filePath: string,
   audioRef: React.RefObject<HTMLAudioElement | null>,
   preloadedMetadata?: AudioMetadata,
+  autoPlay = true,
 ): Promise<boolean> {
   const requestId = ++loadRequestCounter;
 
@@ -49,6 +50,10 @@ async function loadFileInternal(
     window.electronAPI.getBookmarks(filePath),
   ]);
 
+  console.log('[SP] loadFileInternal: url=', url);
+  console.log('[SP] loadFileInternal: chapters=', metadata.chapters?.length ?? 0, metadata.chapters);
+  console.log('[SP] loadFileInternal: audioRef.current=', !!audioRef.current);
+
   // A newer load was triggered while we were awaiting — discard this result
   if (requestId !== loadRequestCounter) return false;
 
@@ -59,8 +64,26 @@ async function loadFileInternal(
 
   usePlayerStore.getState().setCurrentTrack(metadata, url);
   usePlayerStore.getState().setBookmarks(bookmarks);
-  usePlayerStore.getState().setIsPlaying(true);
+  if (autoPlay) {
+    usePlayerStore.getState().setIsPlaying(true);
+  }
   return true;
+}
+
+/** Save current session state (playlist + index + position + playing flag) for restore on restart. */
+function saveSessionNow(): void {
+  const { playlist, currentIndex, currentTime, isPlaying } = usePlayerStore.getState();
+  if (playlist.length === 0) return;
+  window.electronAPI
+    .saveLastSession({
+      filePaths: playlist.map((t) => t.filePath),
+      currentIndex,
+      position: currentTime,
+      wasPlaying: isPlaying,
+    })
+    .catch((err: unknown) => {
+      console.error('Failed to save session:', err);
+    });
 }
 
 /** Stop playback, clear the audio element, and reset store (preserving volume/rate). */
@@ -118,24 +141,47 @@ export function useAudioPlayerSetup() {
   // Update source
   useEffect(() => {
     const audio = audioRef.current;
+    console.log('[SP] source effect: audio=', !!audio, 'audioUrl=', audioUrl?.slice(0, 80));
     if (!audio || !audioUrl) return;
     audio.src = audioUrl;
-    audio.load();
+    // Log audio element events for debugging
+    const onError = () => console.error('[SP] audio error: code=' + audio.error?.code + ' msg=' + audio.error?.message);
+    const onCanPlay = () => console.log('[SP] audio canplay, duration=' + audio.duration + ' readyState=' + audio.readyState);
+    const onLoadStart = () => console.log('[SP] audio loadstart');
+    const onLoadedMeta = () => console.log('[SP] audio loadedmetadata, duration=' + audio.duration);
+    audio.addEventListener('error', onError);
+    audio.addEventListener('canplay', onCanPlay);
+    audio.addEventListener('loadstart', onLoadStart);
+    audio.addEventListener('loadedmetadata', onLoadedMeta);
+    return () => {
+      audio.removeEventListener('error', onError);
+      audio.removeEventListener('canplay', onCanPlay);
+      audio.removeEventListener('loadstart', onLoadStart);
+      audio.removeEventListener('loadedmetadata', onLoadedMeta);
+    };
   }, [audioRef, audioUrl]);
 
   // Play/pause sync
   useEffect(() => {
     const audio = audioRef.current;
+    console.log('[SP] play/pause effect: audio=', !!audio, 'isPlaying=', isPlaying, 'audioUrl=', !!audioUrl);
     if (!audio || !audioUrl) return;
 
     if (isPlaying) {
-      audio.play().catch(() => setIsPlaying(false));
+      console.log('[SP] calling audio.play(), readyState=' + audio.readyState + ' networkState=' + audio.networkState + ' src=' + audio.src?.slice(0, 80));
+      audio.play().then(() => {
+        console.log('[SP] audio.play() succeeded, currentTime=' + audio.currentTime);
+      }).catch((err) => {
+        console.error('[SP] audio.play() FAILED: ' + (err instanceof Error ? err.message : String(err)));
+        setIsPlaying(false);
+      });
     } else {
       audio.pause();
-      // Save position whenever playback is paused
+      // Save position + session whenever playback is paused
       const track = usePlayerStore.getState().currentTrack;
       if (track && audio.currentTime > 0) {
         savePositionNow(track.filePath, audio.currentTime);
+        saveSessionNow();
       }
     }
   }, [audioRef, isPlaying, audioUrl, setIsPlaying]);
@@ -209,13 +255,14 @@ export function useAudioPlayerSetup() {
     };
   }, [audioRef, setCurrentTime, setDuration, setIsPlaying]);
 
-  // Auto-save playback position every 5 seconds while playing
+  // Auto-save playback position + session every 5 seconds while playing
   useEffect(() => {
     if (isPlaying) {
       positionSaveTimer.current = setInterval(() => {
         const { currentTrack, currentTime } = usePlayerStore.getState();
         if (currentTrack) {
           savePositionNow(currentTrack.filePath, currentTime);
+          saveSessionNow();
         }
       }, POSITION_SAVE_INTERVAL);
     }
@@ -233,11 +280,67 @@ export function useAudioPlayerSetup() {
       const { currentTrack, currentTime } = usePlayerStore.getState();
       if (currentTrack) {
         savePositionNow(currentTrack.filePath, currentTime);
+        saveSessionNow();
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
+
+  // Restore last session on startup (run once)
+  const sessionRestored = useRef(false);
+  useEffect(() => {
+    if (sessionRestored.current) return;
+    sessionRestored.current = true;
+
+    (async () => {
+      try {
+        const session = await window.electronAPI.getLastSession();
+        if (!session || session.filePaths.length === 0) return;
+
+        console.log('[SP] restoring session:', session.filePaths.length, 'files, index=', session.currentIndex, 'pos=', session.position);
+
+        // Use allSettled so a single missing/moved file doesn't break the entire restore
+        const results = await Promise.allSettled(
+          session.filePaths.map((fp) => window.electronAPI.getMetadata(fp)),
+        );
+
+        const metadataList: AudioMetadata[] = [];
+        const validPaths: string[] = [];
+        for (let i = 0; i < results.length; i++) {
+          const r = results[i];
+          if (r.status === 'fulfilled') {
+            metadataList.push(r.value);
+            validPaths.push(session.filePaths[i]);
+          } else {
+            console.warn('[SP] session restore: skipping missing file:', session.filePaths[i]);
+          }
+        }
+
+        if (metadataList.length === 0) return;
+
+        // Recalculate index: the saved index may point to a file that was filtered out
+        let restoredIndex = validPaths.indexOf(session.filePaths[session.currentIndex]);
+        if (restoredIndex < 0) restoredIndex = 0;
+
+        usePlayerStore.getState().setPlaylistAndIndex(metadataList, restoredIndex);
+
+        const currentFilePath = validPaths[restoredIndex];
+        if (currentFilePath) {
+          // Restore position; resume playback if it was playing when app closed
+          pendingSeekPosition = session.position;
+          await loadFileInternal(
+            currentFilePath,
+            audioRef,
+            metadataList[restoredIndex],
+            session.wasPlaying ?? false,
+          );
+        }
+      } catch (err) {
+        console.error('Failed to restore session:', err);
+      }
+    })();
+  }, [audioRef]);
 }
 
 // ---------------------------------------------------------------------------
@@ -273,8 +376,10 @@ export function useAudioActions() {
   const seek = useCallback(
     (time: number) => {
       const audio = audioRef.current;
+      console.log('[SP] seek: time=' + time + ' audio=' + !!audio + ' duration=' + audio?.duration + ' readyState=' + audio?.readyState);
       if (audio && isFinite(time)) {
         const clamped = Math.max(0, Math.min(time, audio.duration || 0));
+        console.log('[SP] seek: clamped=' + clamped);
         audio.currentTime = clamped;
         setCurrentTime(clamped);
       }
@@ -361,6 +466,7 @@ export function useAudioActions() {
   }, [playTrackByIndex]);
 
   const openFileDialog = useCallback(async () => {
+    console.log('[SP] openFileDialog clicked');
     try {
       const files = await window.electronAPI.openFiles();
       if (files.length > 0) {
@@ -372,6 +478,7 @@ export function useAudioActions() {
   }, [loadFilesAsPlaylist]);
 
   const openFolderDialog = useCallback(async () => {
+    console.log('[SP] openFolderDialog clicked');
     try {
       const files = await window.electronAPI.openFolder();
       if (files.length > 0) {

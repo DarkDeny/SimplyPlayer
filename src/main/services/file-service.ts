@@ -1,12 +1,21 @@
-import { dialog } from 'electron';
+import { dialog, BrowserWindow } from 'electron';
+import type { OpenDialogOptions } from 'electron';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const AUDIO_EXTENSIONS = new Set(['.mp3', '.m4b', '.m4a', '.aac', '.ogg', '.flac', '.wav']);
 
+function showDialog(options: OpenDialogOptions) {
+  const win = BrowserWindow.getFocusedWindow();
+  // Pass parent window so the dialog is modal and doesn't hide behind the app
+  return win
+    ? dialog.showOpenDialog(win, options)
+    : dialog.showOpenDialog(options);
+}
+
 export async function openFileDialog(): Promise<string[]> {
-  const result = await dialog.showOpenDialog({
+  const result = await showDialog({
     properties: ['openFile', 'multiSelections'],
     filters: [
       { name: 'Audio Files', extensions: ['mp3', 'm4b', 'm4a', 'aac', 'ogg', 'flac', 'wav'] },
@@ -19,7 +28,7 @@ export async function openFileDialog(): Promise<string[]> {
 }
 
 export async function openFolderDialog(): Promise<string[]> {
-  const result = await dialog.showOpenDialog({
+  const result = await showDialog({
     properties: ['openDirectory'],
   });
 
@@ -47,5 +56,6 @@ async function scanFolder(folderPath: string): Promise<string[]> {
 }
 
 export function getFileUrl(filePath: string): string {
+  // webSecurity: false allows direct file:// access from the renderer
   return pathToFileURL(filePath).href;
 }
