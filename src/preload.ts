@@ -13,6 +13,8 @@ const api: ElectronAPI = {
   getBookmarks: (filePath) => ipcRenderer.invoke('store:getBookmarks', filePath),
   savePlaylists: (playlists) => ipcRenderer.invoke('store:savePlaylists', playlists),
   getPlaylists: () => ipcRenderer.invoke('store:getPlaylists'),
+  saveLastSession: (session) => ipcRenderer.invoke('store:saveLastSession', session),
+  getLastSession: () => ipcRenderer.invoke('store:getLastSession'),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

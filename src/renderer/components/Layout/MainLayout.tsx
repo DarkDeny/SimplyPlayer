@@ -3,6 +3,7 @@ import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { PlayerToolbar } from '../Player/PlayerToolbar';
 import { ChapterList } from '../Audiobook/ChapterList';
 import { Bookmarks } from '../Audiobook/Bookmarks';
+import { PlaylistPanel } from '../Playlist/PlaylistPanel';
 import './MainLayout.css';
 
 export function MainLayout() {
@@ -15,6 +16,12 @@ export function MainLayout() {
   return (
     <div className="main-layout">
       <div className="main-layout__content">
+        {/* Left sidebar — Playlist (always visible) */}
+        <div className="main-layout__sidebar main-layout__sidebar--left">
+          <PlaylistPanel />
+        </div>
+
+        {/* Center — Now playing / Welcome */}
         <div className="main-layout__center skeuo-inset">
           {currentTrack ? (
             <div className="main-layout__now-playing">
@@ -53,8 +60,10 @@ export function MainLayout() {
             </div>
           )}
         </div>
+
+        {/* Right sidebar — Chapters + Bookmarks */}
         {currentTrack && (
-          <div className="main-layout__sidebar">
+          <div className="main-layout__sidebar main-layout__sidebar--right">
             {hasChapters && <ChapterList />}
             <Bookmarks />
           </div>

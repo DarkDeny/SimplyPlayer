@@ -37,8 +37,9 @@ interface PlayerState {
   addBookmark: (bookmark: Bookmark) => void;
   removeBookmark: (id: string) => void;
   setSleepTimer: (end: number | null, mode: 'off' | 'time' | 'chapter') => void;
-  setPlaylist: (playlist: AudioMetadata[]) => void;
-  setCurrentIndex: (index: number) => void;
+  setPlaylistAndIndex: (playlist: AudioMetadata[], currentIndex: number) => void;
+  removeFromPlaylist: (index: number) => void;
+  moveInPlaylist: (fromIndex: number, toIndex: number) => void;
   reset: () => void;
 }
 
@@ -81,7 +82,47 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   removeBookmark: (id) =>
     set((state) => ({ bookmarks: state.bookmarks.filter((b) => b.id !== id) })),
   setSleepTimer: (end, mode) => set({ sleepTimerEnd: end, sleepTimerMode: mode }),
-  setPlaylist: (playlist) => set({ playlist }),
-  setCurrentIndex: (index) => set({ currentIndex: index }),
+
+  /** Atomically set both playlist and currentIndex to avoid race conditions */
+  setPlaylistAndIndex: (playlist, currentIndex) => set({ playlist, currentIndex }),
+
+  removeFromPlaylist: (index) =>
+    set((state) => {
+      const newPlaylist = [...state.playlist];
+      newPlaylist.splice(index, 1);
+      // Adjust currentIndex: shift if a track before current was removed
+      let newIndex = state.currentIndex;
+      if (index < state.currentIndex) {
+        newIndex--;
+      } else if (index === state.currentIndex) {
+        // Removed the currently playing track — caller must handle playback
+        newIndex = Math.min(newIndex, newPlaylist.length - 1);
+      }
+      return { playlist: newPlaylist, currentIndex: newIndex };
+    }),
+
+  moveInPlaylist: (fromIndex, toIndex) =>
+    set((state) => {
+      if (fromIndex === toIndex) return state;
+      const newPlaylist = [...state.playlist];
+      const [moved] = newPlaylist.splice(fromIndex, 1);
+      // After removing fromIndex, adjust toIndex for the "insert before" semantics
+      const adjustedTo = fromIndex < toIndex ? toIndex - 1 : toIndex;
+      newPlaylist.splice(adjustedTo, 0, moved);
+
+      // Update currentIndex to follow the currently playing track
+      let newIndex = state.currentIndex;
+      if (state.currentIndex === fromIndex) {
+        newIndex = adjustedTo;
+      } else {
+        if (fromIndex < state.currentIndex && adjustedTo >= state.currentIndex) {
+          newIndex--;
+        } else if (fromIndex > state.currentIndex && adjustedTo <= state.currentIndex) {
+          newIndex++;
+        }
+      }
+      return { playlist: newPlaylist, currentIndex: newIndex };
+    }),
+
   reset: () => set(initialState),
 }));

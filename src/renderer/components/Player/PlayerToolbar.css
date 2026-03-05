@@ -1,15 +1,32 @@
 .player-toolbar {
+  position: relative;
   border-radius: 0;
   border-left: none;
   border-right: none;
   border-bottom: none;
   padding: 0;
+  overflow: visible;
 }
 
-.player-toolbar__controls {
+/* ─── Row 1: Transport controls ─── */
+.player-toolbar__transport {
   display: flex;
   align-items: center;
-  padding: 8px 16px 12px;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 16px 4px;
+}
+
+.player-toolbar__transport button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Row 2: Track info (left) + utilities (right) ─── */
+.player-toolbar__info-row {
+  display: flex;
+  align-items: center;
+  padding: 2px 16px 10px;
   gap: 16px;
 }
 
@@ -26,10 +43,11 @@
 }
 
 .player-toolbar__cover {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 4px;
   object-fit: cover;
+  flex-shrink: 0;
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -56,22 +74,14 @@
   text-overflow: ellipsis;
 }
 
-.player-toolbar__center {
+.player-toolbar__open-buttons {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.player-toolbar__center button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  gap: 8px;
 }
 
 .player-toolbar__right {
-  flex: 1;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
+  gap: 10px;
+  flex-shrink: 0;
 }

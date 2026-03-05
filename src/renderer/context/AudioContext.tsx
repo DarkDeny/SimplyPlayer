@@ -6,21 +6,22 @@ interface AudioContextValue {
 
 const AudioCtx = createContext<AudioContextValue | null>(null);
 
-export function AudioProvider({ children }: { children: ReactNode }) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+/**
+ * Create the audio element once, at module level.
+ * This avoids all React lifecycle issues (Strict Mode double-mount,
+ * useEffect ordering between parent and child, etc.).
+ */
+const globalAudio = new Audio();
+globalAudio.preservesPitch = true;
 
+export function AudioProvider({ children }: { children: ReactNode }) {
+  const audioRef = useRef<HTMLAudioElement | null>(globalAudio);
+
+  // Cleanup only on real unmount (app close)
   useEffect(() => {
-    if (!audioRef.current) {
-      const audio = new Audio();
-      audio.preservesPitch = true;
-      audioRef.current = audio;
-    }
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current = null;
-      }
+      globalAudio.pause();
+      globalAudio.src = '';
     };
   }, []);
 
