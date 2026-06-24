@@ -1,14 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useChapters } from '../../hooks/useChapters';
 import { useAudioActions } from '../../hooks/useAudioPlayer';
+import { usePlayerStore } from '../../store/playerStore';
 import { formatTime } from '../../utils/formatTime';
 import './ChapterList.css';
 
 export function ChapterList() {
   const { chapters, currentChapterIndex } = useChapters();
   const { seek } = useAudioActions();
+  const setIsPlaying = usePlayerStore((s) => s.setIsPlaying);
   const listRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Auto-scroll to current chapter
   useEffect(() => {
@@ -24,22 +27,43 @@ export function ChapterList() {
     }
   }, [currentChapterIndex]);
 
+  // Clear selection when the playing chapter changes
+  useEffect(() => {
+    setSelectedIndex(null);
+  }, [currentChapterIndex]);
+
   if (chapters.length === 0) return null;
+
+  const handleClick = (index: number) => {
+    setSelectedIndex(index);
+  };
+
+  const handleDoubleClick = (index: number) => {
+    seek(chapters[index].startTime);
+    setIsPlaying(true);
+  };
 
   return (
     <div className="chapter-list">
       <h3 className="chapter-list__title">Chapters</h3>
       <div className="chapter-list__items skeuo-inset" ref={listRef}>
         {chapters.map((chapter, index) => {
-          const isActive = index === currentChapterIndex;
+          const isPlaying = index === currentChapterIndex;
+          const isSelected = index === selectedIndex;
           const duration = chapter.endTime - chapter.startTime;
+
+          let className = 'chapter-list__item';
+          if (isPlaying) className += ' chapter-list__item--active';
+          if (isSelected) className += ' chapter-list__item--selected';
+
           return (
             <button
               key={index}
-              ref={isActive ? activeRef : undefined}
-              className={`chapter-list__item ${isActive ? 'chapter-list__item--active' : ''}`}
-              onClick={() => seek(chapter.startTime)}
-              title={`Go to ${chapter.title}`}
+              ref={isPlaying ? activeRef : undefined}
+              className={className}
+              onClick={() => handleClick(index)}
+              onDoubleClick={() => handleDoubleClick(index)}
+              title={`Double-click to play ${chapter.title}`}
             >
               <span className="chapter-list__index">{index + 1}</span>
               <span className="chapter-list__name">{chapter.title}</span>

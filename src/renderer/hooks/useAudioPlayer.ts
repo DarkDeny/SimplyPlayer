@@ -57,7 +57,8 @@ async function loadFileInternal(
   // A newer load was triggered while we were awaiting — discard this result
   if (requestId !== loadRequestCounter) return false;
 
-  // If we have a saved position, queue it for restore after metadata loads
+  // Reset any stale pending seek, then queue the saved position if one exists
+  pendingSeekPosition = null;
   if (savedPosition && savedPosition.position > 0) {
     pendingSeekPosition = savedPosition.position;
   }
@@ -327,8 +328,6 @@ export function useAudioPlayerSetup() {
 
         const currentFilePath = validPaths[restoredIndex];
         if (currentFilePath) {
-          // Restore position; resume playback if it was playing when app closed
-          pendingSeekPosition = session.position;
           await loadFileInternal(
             currentFilePath,
             audioRef,
