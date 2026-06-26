@@ -11,9 +11,11 @@ import {
   getPlaylists,
   saveLastSession,
   getLastSession,
+  saveEqSettings,
+  getEqSettings,
 } from './services/store-service';
 import { startWarming, updatePosition } from './services/cache-service';
-import type { PlaybackPosition, Bookmark, Playlist, LastSession } from '../shared/types';
+import type { PlaybackPosition, Bookmark, Playlist, LastSession, EqSettings } from '../shared/types';
 
 function wrapHandler<T>(handler: (...args: unknown[]) => T | Promise<T>) {
   return async (_event: Electron.IpcMainInvokeEvent, ...args: unknown[]) => {
@@ -88,4 +90,10 @@ export function registerIpcHandlers(): void {
   ));
 
   ipcMain.handle('store:getLastSession', wrapHandler(() => getLastSession()));
+
+  ipcMain.handle('store:saveEqSettings', wrapHandler(
+    (settings: unknown) => saveEqSettings(settings as EqSettings),
+  ));
+
+  ipcMain.handle('store:getEqSettings', wrapHandler(() => getEqSettings()));
 }

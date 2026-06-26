@@ -1,0 +1,211 @@
+.equalizer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  min-width: 240px;
+}
+
+.equalizer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.equalizer__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.equalizer__toggle {
+  position: relative;
+  width: 36px;
+  height: 18px;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(180deg, #1a1a1a 0%, #252525 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.equalizer__toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  background: radial-gradient(circle at 35% 35%, #777, #555 60%, #444);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.equalizer__toggle--on {
+  background: linear-gradient(180deg, #1a3a5a 0%, #254060 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(74, 158, 255, 0.1);
+}
+
+.equalizer__toggle--on::after {
+  left: 20px;
+  background: radial-gradient(circle at 35% 35%, #6ab4ff, #4a9eff 60%, #3080dd);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    0 0 6px rgba(74, 158, 255, 0.3);
+}
+
+.equalizer__preset-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.equalizer__preset-select {
+  flex: 1;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background: linear-gradient(180deg, #2a2a2a 0%, #222 100%);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 0 6px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.equalizer__preset-select:focus {
+  outline: 1px solid var(--accent);
+}
+
+.equalizer__reset-btn {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  transition: color 0.15s;
+}
+
+.equalizer__reset-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Band sliders area */
+.equalizer__bands {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.equalizer__band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 22px;
+}
+
+.equalizer__band-value {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Vertical slider track */
+.equalizer__slider-wrap {
+  position: relative;
+  width: 22px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.equalizer__slider-track {
+  position: absolute;
+  width: 6px;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #252525 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.equalizer__slider-zero {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.equalizer__slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  transform: rotate(-90deg);
+}
+
+.equalizer__slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+  background: radial-gradient(ellipse at 40% 30%, #999, #666 60%, #555);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.equalizer__slider-input::-webkit-slider-thumb:hover {
+  background: radial-gradient(ellipse at 40% 30%, #aaa, #777 60%, #666);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.equalizer__band-label {
+  font-size: 8px;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Disabled state */
+.equalizer--disabled .equalizer__bands {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.equalizer--disabled .equalizer__preset-row {
+  opacity: 0.35;
+  pointer-events: none;
+}

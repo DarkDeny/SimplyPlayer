@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useAudioRef } from '../context/AudioContext';
 import { usePlayerStore } from '../store/playerStore';
+import { ensureAudioContextResumed } from '../audio/audioEngine';
 import type { AudioMetadata } from '../../shared/types';
 import { formatTime } from '../utils/formatTime';
 
@@ -169,6 +170,7 @@ export function useAudioPlayerSetup() {
     if (!audio || !audioUrl) return;
 
     if (isPlaying) {
+      ensureAudioContextResumed();
       console.log('[SP] calling audio.play(), readyState=' + audio.readyState + ' networkState=' + audio.networkState + ' src=' + audio.src?.slice(0, 80));
       audio.play().then(() => {
         console.log('[SP] audio.play() succeeded, currentTime=' + audio.currentTime);

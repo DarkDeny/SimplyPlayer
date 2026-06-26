@@ -3,6 +3,7 @@ import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { PlayerToolbar } from '../Player/PlayerToolbar';
 import { ChapterList } from '../Audiobook/ChapterList';
 import { Bookmarks } from '../Audiobook/Bookmarks';
+import { Equalizer } from '../Player/Equalizer';
 import { PlaylistPanel } from '../Playlist/PlaylistPanel';
 import './MainLayout.css';
 
@@ -61,11 +62,12 @@ export function MainLayout() {
           )}
         </div>
 
-        {/* Right sidebar — Chapters + Bookmarks */}
+        {/* Right sidebar — Chapters + Bookmarks + Equalizer */}
         {currentTrack && (
           <div className="main-layout__sidebar main-layout__sidebar--right">
             {hasChapters && <ChapterList />}
             <Bookmarks />
+            <Equalizer />
           </div>
         )}
       </div>

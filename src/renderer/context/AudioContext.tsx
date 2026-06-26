@@ -1,4 +1,5 @@
 import { createContext, useContext, useRef, useEffect, type ReactNode } from 'react';
+import { initAudioEngine } from '../audio/audioEngine';
 
 interface AudioContextValue {
   audioRef: React.RefObject<HTMLAudioElement | null>;
@@ -17,8 +18,8 @@ globalAudio.preservesPitch = true;
 export function AudioProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(globalAudio);
 
-  // Cleanup only on real unmount (app close)
   useEffect(() => {
+    initAudioEngine(globalAudio);
     return () => {
       globalAudio.pause();
       globalAudio.src = '';

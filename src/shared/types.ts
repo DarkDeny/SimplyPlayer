@@ -43,6 +43,12 @@ export interface Playlist {
   createdAt: number;
 }
 
+export interface EqSettings {
+  enabled: boolean;
+  gains: number[];
+  presetName: string | null;
+}
+
 /** Remembers what was playing when the app was last closed. */
 export interface LastSession {
   filePaths: string[];
@@ -65,6 +71,8 @@ export interface ElectronAPI {
   getPlaylists: () => Promise<Playlist[]>;
   saveLastSession: (session: LastSession) => Promise<void>;
   getLastSession: () => Promise<LastSession | null>;
+  saveEqSettings: (settings: EqSettings) => Promise<void>;
+  getEqSettings: () => Promise<EqSettings | null>;
 }
 
 declare global {

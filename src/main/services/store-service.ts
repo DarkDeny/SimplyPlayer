@@ -1,11 +1,12 @@
 import Store from 'electron-store';
-import type { PlaybackPosition, Bookmark, Playlist, LastSession } from '../../shared/types';
+import type { PlaybackPosition, Bookmark, Playlist, LastSession, EqSettings } from '../../shared/types';
 
 interface StoreSchema {
   playbackPositions: Record<string, PlaybackPosition>;
   bookmarks: Record<string, Bookmark[]>;
   playlists: Playlist[];
   lastSession: LastSession | null;
+  eqSettings: EqSettings | null;
 }
 
 const store = new Store<StoreSchema>({
@@ -14,6 +15,7 @@ const store = new Store<StoreSchema>({
     bookmarks: {},
     playlists: [],
     lastSession: null,
+    eqSettings: null,
   },
 });
 
@@ -68,4 +70,12 @@ export function saveLastSession(session: LastSession): void {
 
 export function getLastSession(): LastSession | null {
   return store.get('lastSession');
+}
+
+export function saveEqSettings(settings: EqSettings): void {
+  store.set('eqSettings', settings);
+}
+
+export function getEqSettings(): EqSettings | null {
+  return store.get('eqSettings');
 }

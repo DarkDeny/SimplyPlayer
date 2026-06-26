@@ -15,6 +15,8 @@ const api: ElectronAPI = {
   getPlaylists: () => ipcRenderer.invoke('store:getPlaylists'),
   saveLastSession: (session) => ipcRenderer.invoke('store:saveLastSession', session),
   getLastSession: () => ipcRenderer.invoke('store:getLastSession'),
+  saveEqSettings: (settings) => ipcRenderer.invoke('store:saveEqSettings', settings),
+  getEqSettings: () => ipcRenderer.invoke('store:getEqSettings'),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);
