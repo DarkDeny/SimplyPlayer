@@ -1,23 +1,7 @@
-.chapter-list {
-  display: flex;
-  flex-direction: column;
-  min-height: 120px;
-  max-height: 50vh;
-  min-width: 240px;
-  max-width: 320px;
-}
-
-.chapter-list__title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 8px 12px;
-}
-
 .chapter-list__items {
   flex: 1;
+  min-height: 120px;
+  max-height: 50vh;
   overflow-y: auto;
   padding: 4px;
 }
