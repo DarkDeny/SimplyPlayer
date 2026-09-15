@@ -41,16 +41,22 @@ export async function openFolderDialog(): Promise<string[]> {
 async function scanFolder(folderPath: string): Promise<string[]> {
   const files: string[] = [];
 
-  const entries = await fs.readdir(folderPath, { withFileTypes: true });
-  for (const entry of entries) {
-    if (entry.isFile()) {
-      const ext = path.extname(entry.name).toLowerCase();
-      if (AUDIO_EXTENSIONS.has(ext)) {
-        files.push(path.join(folderPath, entry.name));
+  async function walk(dir: string) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(fullPath);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name).toLowerCase();
+        if (AUDIO_EXTENSIONS.has(ext)) {
+          files.push(fullPath);
+        }
       }
     }
   }
 
+  await walk(folderPath);
   files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   return files;
 }
