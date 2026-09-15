@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useChapters } from '../../hooks/useChapters';
 import { useAudioActions } from '../../hooks/useAudioPlayer';
 import { usePlayerStore } from '../../store/playerStore';
+import { CollapsiblePanel } from '../Layout/CollapsiblePanel';
 import { formatTime } from '../../utils/formatTime';
 import './ChapterList.css';
 
@@ -44,8 +45,7 @@ export function ChapterList() {
   };
 
   return (
-    <div className="chapter-list">
-      <h3 className="chapter-list__title">Chapters</h3>
+    <CollapsiblePanel title="Chapters" storageKey="chapters">
       <div className="chapter-list__items skeuo-inset" ref={listRef}>
         {chapters.map((chapter, index) => {
           const isPlaying = index === currentChapterIndex;
@@ -72,6 +72,6 @@ export function ChapterList() {
           );
         })}
       </div>
-    </div>
+    </CollapsiblePanel>
   );
 }

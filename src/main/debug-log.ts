@@ -6,11 +6,22 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
+import { app } from 'electron';
 
-const LOG_FILE = path.resolve(__dirname, '../../debug.log');
-try { fs.writeFileSync(LOG_FILE, ''); } catch { /* */ }
+let logFile: string | null = null;
+
+function getLogPath(): string {
+  if (logFile) return logFile;
+  try {
+    logFile = path.join(app.getPath('userData'), 'debug.log');
+  } catch {
+    logFile = path.resolve(__dirname, '../../debug.log');
+  }
+  try { fs.writeFileSync(logFile, ''); } catch { /* */ }
+  return logFile;
+}
 
 export function dbg(msg: string): void {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
-  try { fs.appendFileSync(LOG_FILE, line); } catch { /* */ }
+  try { fs.appendFileSync(getLogPath(), line); } catch { /* */ }
 }

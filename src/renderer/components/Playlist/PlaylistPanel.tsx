@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
 import { useAudioActions } from '../../hooks/useAudioPlayer';
+import { CollapsiblePanel } from '../Layout/CollapsiblePanel';
 import { formatTime } from '../../utils/formatTime';
 import './PlaylistPanel.css';
 
@@ -70,71 +71,49 @@ export function PlaylistPanel() {
     [removeTrack],
   );
 
+  const headerActions = (
+    <>
+      <button
+        className="skeuo-btn skeuo-btn--small"
+        onClick={openFolderDialog}
+        title="Open folder"
+        aria-label="Open folder"
+      >
+        <FolderIcon />
+      </button>
+      <button
+        className="skeuo-btn skeuo-btn--small"
+        onClick={openFileDialog}
+        title="Add files"
+        aria-label="Add files"
+      >
+        <PlusIcon />
+      </button>
+      {playlist.length > 0 && (
+        <button
+          className="skeuo-btn skeuo-btn--small"
+          onClick={clearPlaylist}
+          title="Clear playlist"
+          aria-label="Clear playlist"
+        >
+          <TrashIcon />
+        </button>
+      )}
+    </>
+  );
+
   if (playlist.length === 0) {
     return (
-      <div className="playlist-panel">
-        <div className="playlist-panel__header">
-          <h3 className="playlist-panel__title">Playlist</h3>
-          <div className="playlist-panel__header-actions">
-            <button
-              className="skeuo-btn skeuo-btn--small"
-              onClick={openFolderDialog}
-              title="Open folder"
-              aria-label="Open folder"
-            >
-              <FolderIcon />
-            </button>
-            <button
-              className="skeuo-btn skeuo-btn--small"
-              onClick={openFileDialog}
-              title="Add files"
-              aria-label="Add files"
-            >
-              <PlusIcon />
-            </button>
-          </div>
-        </div>
+      <CollapsiblePanel title="Playlist" storageKey="playlist" headerActions={headerActions}>
         <p className="playlist-panel__empty">
           Open files or a folder to start a playlist
         </p>
-      </div>
+      </CollapsiblePanel>
     );
   }
 
   return (
-    <div className="playlist-panel">
-      <div className="playlist-panel__header">
-        <h3 className="playlist-panel__title">
-          Playlist
-          <span className="playlist-panel__count">{playlist.length}</span>
-        </h3>
-        <div className="playlist-panel__header-actions">
-          <button
-            className="skeuo-btn skeuo-btn--small"
-            onClick={openFolderDialog}
-            title="Open folder"
-            aria-label="Open folder"
-          >
-            <FolderIcon />
-          </button>
-          <button
-            className="skeuo-btn skeuo-btn--small"
-            onClick={openFileDialog}
-            title="Add files"
-            aria-label="Add files"
-          >
-            <PlusIcon />
-          </button>
-          <button
-            className="skeuo-btn skeuo-btn--small"
-            onClick={clearPlaylist}
-            title="Clear playlist"
-            aria-label="Clear playlist"
-          >
-            <TrashIcon />
-          </button>
-        </div>
-      </div>
+    <CollapsiblePanel title="Playlist" storageKey="playlist" headerActions={headerActions}>
       <div className="playlist-panel__list skeuo-inset" role="listbox" aria-label="Playlist tracks">
         {playlist.map((track, index) => {
           const isActive = index === currentIndex;
@@ -193,7 +172,7 @@ export function PlaylistPanel() {
           );
         })}
       </div>
-    </div>
+    </CollapsiblePanel>
   );
 }
 

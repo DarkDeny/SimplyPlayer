@@ -40,7 +40,7 @@ export function MainLayout() {
               <div className="main-layout__track-details">
                 <h2 className="main-layout__track-title">{currentTrack.title}</h2>
                 <p className="main-layout__track-artist">{currentTrack.artist}</p>
-                {currentTrack.album && (
+                {currentTrack.album && currentTrack.album !== currentTrack.title && (
                   <p className="main-layout__track-album">{currentTrack.album}</p>
                 )}
               </div>

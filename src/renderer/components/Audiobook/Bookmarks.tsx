@@ -1,5 +1,6 @@
 import { usePlayerStore } from '../../store/playerStore';
 import { useAudioActions } from '../../hooks/useAudioPlayer';
+import { CollapsiblePanel } from '../Layout/CollapsiblePanel';
 import { formatTime } from '../../utils/formatTime';
 import './Bookmarks.css';
 
@@ -13,20 +14,20 @@ export function Bookmarks() {
   // Sort bookmarks by position ascending
   const sortedBookmarks = [...bookmarks].sort((a, b) => a.position - b.position);
 
+  const addBtn = (
+    <button
+      className="skeuo-btn skeuo-btn--small bookmarks__add-btn"
+      onClick={() => addBookmarkAtCurrentTime()}
+      title="Add bookmark at current position"
+      aria-label="Add bookmark at current position"
+    >
+      <PlusIcon />
+      <span>Add</span>
+    </button>
+  );
+
   return (
-    <div className="bookmarks">
-      <div className="bookmarks__header">
-        <h3 className="bookmarks__title">Bookmarks</h3>
-        <button
-          className="skeuo-btn skeuo-btn--small bookmarks__add-btn"
-          onClick={() => addBookmarkAtCurrentTime()}
-          title="Add bookmark at current position"
-          aria-label="Add bookmark at current position"
-        >
-          <PlusIcon />
-          <span>Add</span>
-        </button>
-      </div>
+    <CollapsiblePanel title="Bookmarks" storageKey="bookmarks" headerActions={addBtn}>
       {sortedBookmarks.length === 0 ? (
         <p className="bookmarks__empty">No bookmarks yet</p>
       ) : (
@@ -55,7 +56,7 @@ export function Bookmarks() {
           ))}
         </div>
       )}
-    </div>
+    </CollapsiblePanel>
   );
 }
 
