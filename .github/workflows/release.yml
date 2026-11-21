@@ -20,7 +20,7 @@ jobs:
           cache: npm
 
       - name: Sync package version with tag
-        run: npm version ${{ github.ref_name }} --no-git-tag-version
+        run: npm version ${{ github.ref_name }} --no-git-tag-version --allow-same-version
 
       - name: Restore previous packages for delta updates
         continue-on-error: true
