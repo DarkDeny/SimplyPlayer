@@ -1,11 +1,20 @@
 import { app, autoUpdater } from 'electron';
 import { dbg } from './debug-log';
 
-// Squirrel.Windows update feed pointing at the local electron-forge make
-// output. After every `make-win.cmd` build the new RELEASES + .nupkg appear
-// there, so the installed app picks updates up on the next launch.
-const UPDATE_FEED =
-  'D:\\Projects\\Personal\\SimplyPlayer\\out\\make\\squirrel.windows\\x64';
+// GitHub repo whose Releases feed update.electronjs.org (public repo required).
+const GITHUB_REPO = 'DarkDeny/SimplyPlayer';
+
+// Update feed resolution:
+// 1. SIMPLYPLAYER_UPDATE_FEED env var — local dev override, e.g. the
+//    electron-forge make output folder (D:\...\out\make\squirrel.windows\x64)
+//    or any other Squirrel-compatible feed.
+// 2. Default — update.electronjs.org backed by GitHub Releases.
+function resolveFeedUrl(): string {
+  if (process.env.SIMPLYPLAYER_UPDATE_FEED) {
+    return process.env.SIMPLYPLAYER_UPDATE_FEED;
+  }
+  return `https://update.electronjs.org/${GITHUB_REPO}/${process.platform}-${process.arch}/${app.getVersion()}`;
+}
 
 export function setupAutoUpdate(): void {
   if (!app.isPackaged || process.platform !== 'win32') {
@@ -13,12 +22,14 @@ export function setupAutoUpdate(): void {
     return;
   }
 
+  const feedUrl = resolveFeedUrl();
   try {
-    autoUpdater.setFeedURL({ url: UPDATE_FEED });
+    autoUpdater.setFeedURL({ url: feedUrl });
   } catch (err) {
     dbg(`Auto-update: setFeedURL failed: ${err}`);
     return;
   }
+  dbg(`Auto-update: feed ${feedUrl}`);
 
   autoUpdater.on('error', (err) => dbg(`Auto-update error: ${err.message}`));
   autoUpdater.on('checking-for-update', () => dbg('Auto-update: checking'));

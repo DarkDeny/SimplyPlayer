@@ -93,3 +93,6 @@ out/
 
 # Claude Code
 .claude/
+
+# Local tooling (portable gh CLI etc.)
+.tools/
