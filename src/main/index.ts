@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { registerIpcHandlers } from './ipc-handlers';
+import { setupAutoUpdate } from './auto-update';
 import { dbg } from './debug-log';
 
 if (started) {
@@ -55,6 +56,7 @@ app.on('ready', () => {
   dbg('app ready');
   registerIpcHandlers();
   dbg('IPC handlers registered');
+  setupAutoUpdate();
   createWindow();
 });
 

@@ -1,7 +1,7 @@
 {
   "name": "simply-player",
   "productName": "SimplyPlayer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Desktop MP3/M4B audio player with audiobook support",
   "main": ".vite/build/index.js",
   "private": true,
