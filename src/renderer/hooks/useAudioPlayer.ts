@@ -72,9 +72,9 @@ async function loadFileInternal(
   return true;
 }
 
-/** Save current session state (playlist + index + position + playing flag) for restore on restart. */
+/** Save current session state (playlist + index + position + playing flag + settings) for restore on restart. */
 function saveSessionNow(): void {
-  const { playlist, currentIndex, currentTime, isPlaying } = usePlayerStore.getState();
+  const { playlist, currentIndex, currentTime, isPlaying, volume, playbackRate } = usePlayerStore.getState();
   if (playlist.length === 0) return;
   window.electronAPI
     .saveLastSession({
@@ -82,6 +82,8 @@ function saveSessionNow(): void {
       currentIndex,
       position: currentTime,
       wasPlaying: isPlaying,
+      volume,
+      playbackRate,
     })
     .catch((err: unknown) => {
       console.error('Failed to save session:', err);
@@ -302,6 +304,13 @@ export function useAudioPlayerSetup() {
         if (!session || session.filePaths.length === 0) return;
 
         console.log('[SP] restoring session:', session.filePaths.length, 'files, index=', session.currentIndex, 'pos=', session.position);
+
+        if (session.volume != null) {
+          usePlayerStore.getState().setVolume(session.volume);
+        }
+        if (session.playbackRate != null) {
+          usePlayerStore.getState().setPlaybackRate(session.playbackRate);
+        }
 
         // Use allSettled so a single missing/moved file doesn't break the entire restore
         const results = await Promise.allSettled(

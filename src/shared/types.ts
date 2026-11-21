@@ -55,6 +55,8 @@ export interface LastSession {
   currentIndex: number;
   position: number; // seconds
   wasPlaying: boolean;
+  volume?: number;
+  playbackRate?: number;
 }
 
 export interface ElectronAPI {
