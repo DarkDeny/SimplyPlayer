@@ -48,8 +48,9 @@ Installed instances pick the update up automatically on next launch.
 
 ## Code signing
 
-Release binaries are planned to be signed via the SignPath Foundation
-programme for open-source projects. See [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
+Release binaries are planned to be signed with a Certum Open Source
+code signing certificate issued to the maintainer. See
+[CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
 
 ## License
 

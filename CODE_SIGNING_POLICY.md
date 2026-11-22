@@ -3,8 +3,8 @@
 This page states the public code-signing policy for the SimplyPlayer project.
 We sign our release binaries to verify their authenticity and integrity.
 
-Free code signing provided by [SignPath.io](https://signpath.io), certificate
-by [SignPath Foundation](https://signpath.org).
+Releases are signed with an Open Source Code Signing certificate issued by
+[Certum](https://www.certum.eu) to the project maintainer, Dmitry Denisov.
 
 _Last updated: November 22, 2026_
 
@@ -17,27 +17,29 @@ _Last updated: November 22, 2026_
 
 - Official Windows releases are built only from the public repository
   [DarkDeny/SimplyPlayer](https://github.com/DarkDeny/SimplyPlayer) using the
-  project's GitHub Actions trusted-build workflow
+  project's GitHub Actions release workflow
   (`.github/workflows/release.yml`), triggered exclusively by pushing a
-  signed-off version tag.
-- Only CI-built artifacts are submitted to SignPath for signing.
-- The private key is held by SignPath on their HSM. This project does not
-  store or have access to the private key.
-- Every signing request requires explicit manual approval by the maintainer
-  before the release is published.
+  version tag.
+- Only CI-built artifacts are signed and published.
+- The private key is stored in Certum's SimplySign cloud service on
+  certified hardware (FIPS 140-2 Level 3 / CC EAL 4+). This project does not
+  store the private key in the repository or on developer machines.
+- Signing credentials are provided to CI exclusively through GitHub
+  encrypted secrets, accessible only to the release workflow.
 
 ## Project roles and responsibilities
 
 Dmitry Denisov (GitHub: [DarkDeny](https://github.com/DarkDeny)) is the sole
-maintainer, committer, reviewer and signing approver. Changes to release
+maintainer, committer, reviewer and certificate holder. Changes to release
 workflows, signing configuration or packaging code require maintainer review
 and approval before a release is packaged.
 
 ## Signing scope
 
 Code signing is strictly limited to official SimplyPlayer open-source
-releases. No third-party or commercial artifacts are signed under this
-policy.
+releases distributed free of charge, in accordance with the terms of the
+Certum Open Source Code Signing certificate. No third-party or commercial
+artifacts are signed under this policy.
 
 ## Privacy policy
 
